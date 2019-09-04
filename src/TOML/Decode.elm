@@ -1,4 +1,7 @@
-module TOML.Decode exposing (Decoder(..))
+module TOML.Decode exposing (..)
+
+import Parser exposing (..)
+import Set exposing (Set)
 
 
 type Decoder
@@ -40,3 +43,51 @@ type TomlValue
     = VBasic TomlBasic
     | VList TomlList
     | VTable String TomlTable
+
+
+
+--
+
+
+parse : Parser TomlTable
+parse =
+    Debug.todo "working on it..."
+
+
+parseKey =
+    oneOf
+        [ parseBareKey
+        , parseQuotedKey
+        ]
+
+
+parseBareKey : Parser String
+parseBareKey =
+    let
+        allowed ch =
+            Char.isAlphaNum ch || ch == '_' || ch == '-'
+    in
+    Parser.variable
+        { start = allowed
+        , inner = allowed
+        , reserved = Set.empty
+        }
+
+
+parseQuotedKey : Parser String
+parseQuotedKey =
+    succeed identity
+        |. symbol "\""
+        |= (chompUntil "\"" |> getChompedString)
+        |. symbol "\""
+
+
+parseLine : Parser ( String, TomlValue )
+parseLine =
+    Parser.succeed Tuple.pair
+        |. spaces
+        |= parseKey
+        |. spaces
+        |. symbol "="
+        |. spaces
+        |= succeed (VBasic (BString "todo"))
