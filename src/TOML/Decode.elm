@@ -103,6 +103,12 @@ parseBool =
             ]
 
 
+comment : Parser ()
+comment =
+    lineComment "#"
+
+
+
 parseLine : Parser ( String, TomlValue )
 parseLine =
     succeed Tuple.pair
@@ -112,3 +118,5 @@ parseLine =
         |. symbol "="
         |. spaces
         |= oneOf [ parseBool, succeed (VBasic (BString "todo")) ]
+        |. spaces
+        |. oneOf [ end, comment ]
