@@ -92,12 +92,23 @@ parseDoubleQuotedKey =
         |. symbol "\""
 
 
+parseBool : Parser TomlValue
+parseBool =
+    map (VBasic << BBoolean) <|
+        oneOf
+            [ succeed True
+                |. keyword "true"
+            , succeed False
+                |. keyword "false"
+            ]
+
+
 parseLine : Parser ( String, TomlValue )
 parseLine =
-    Parser.succeed Tuple.pair
+    succeed Tuple.pair
         |. spaces
         |= parseKey
         |. spaces
         |. symbol "="
         |. spaces
-        |= succeed (VBasic (BString "todo"))
+        |= oneOf [ parseBool, succeed (VBasic (BString "todo")) ]
