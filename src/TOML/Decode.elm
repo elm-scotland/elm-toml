@@ -54,10 +54,12 @@ parse =
     Debug.todo "working on it..."
 
 
+parseKey : Parser String
 parseKey =
     oneOf
         [ parseBareKey
-        , parseQuotedKey
+        , parseSingleQuotedKey
+        , parseDoubleQuotedKey
         ]
 
 
@@ -74,8 +76,16 @@ parseBareKey =
         }
 
 
-parseQuotedKey : Parser String
-parseQuotedKey =
+parseSingleQuotedKey : Parser String
+parseSingleQuotedKey =
+    succeed identity
+        |. symbol "'"
+        |= (chompUntil "'" |> getChompedString)
+        |. symbol "'"
+
+
+parseDoubleQuotedKey : Parser String
+parseDoubleQuotedKey =
     succeed identity
         |. symbol "\""
         |= (chompUntil "\"" |> getChompedString)
