@@ -1,11 +1,17 @@
 module Tests exposing (suite)
 
-import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
-import TOML.Decode
+import Expect
+import TOML.Parser exposing (..)
 import Test exposing (..)
 
 
 suite : Test
 suite =
-    todo "Implement our first test. See https://package.elm-lang.org/packages/elm-explorations/test/latest for how to do this!"
+    describe "TOML.Parser"
+        [ describe "Booleans"
+            [ test "Spec 1" <|
+                \_ ->
+                    fromString "bool1 = true\nbool2 = false"
+                        |> Expect.equal (Ok [ ( "bool1", VBoolean True ), ( "bool2", VBoolean False ) ])
+            ]
+        ]
